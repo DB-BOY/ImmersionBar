@@ -1,29 +1,71 @@
 ![logo](https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/readme_head.png)
 # ImmersionBar -- android 4.4以上沉浸式实现 
+[![version](https://img.shields.io/badge/version-3.0.0-brightgreen.svg)](https://bintray.com/geyifeng/maven/immersionbar) [![author](https://img.shields.io/badge/author-gyf--dev-orange.svg)](https://github.com/gyf-dev) [![简书](https://img.shields.io/badge/%E7%AE%80%E4%B9%A6-HeLe%E5%B0%8F%E5%AD%90%E6%8B%BD-blue.svg)](https://www.jianshu.com/p/2a884e211a62) [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-314360549-red.svg)]()
 
-## 直接看效果图，最下面有各个版本的效果图
+## 直接看效果图，建议下载demo体验，最下面有各个版本的效果图
 <img width="300"  src="https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/Screenshot_6.0.gif"/>
 
 ## 使用 
 > android studio
-
    ```groovy
-   compile 'com.gyf.barlibrary:barlibrary:2.3.0'
+   // 基础依赖包，必须要依赖
+   implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
+   // fragment快速实现（可选）
+   implementation 'com.gyf.immersionbar:immersionbar-components:3.0.0'
+   // kotlin扩展（可选）
+   implementation 'com.gyf.immersionbar:immersionbar-ktx:3.0.0'
    ```
-
->eclipse
-
-[barlibrary-2.3.0.jar](https://github.com/gyf-dev/ImmersionBar/blob/master/jar/barlibrary-2.3.0.jar) 
+## 2.x版本使用说明
+#### [点我查看2.x版本使用说明](https://github.com/gyf-dev/ImmersionBar/blob/master/README_2.x.md)
 
 ## 版本说明
-### [点我](https://github.com/gyf-dev/ImmersionBar/wiki)
+#### [点我查看版本说明](https://github.com/gyf-dev/ImmersionBar/wiki)
 
 ## 下载demo 
-### [下载](https://github.com/gyf-dev/ImmersionBar/blob/master/apk/immersionBar-2.3.0.apk) 
+#### [点我下载immersionBar-3.0.0.apk](https://github.com/gyf-dev/ImmersionBar/blob/master/apk/immersionbar-3.0.0.apk)
+
+## 关于使用AndroidX支持库
+- 如果你的项目中使用了AndroidX支持库，请在你的gradle.properties加入如下配置，如果已经配置了，请忽略
+    ```groovy
+       android.useAndroidX=true
+       android.enableJetifier=true
+    ```
+
+## 关于全面屏与刘海
+#### 关于全面屏
+   在manifest加入如下配置，四选其一，或者都写
+   
+   ① 在manifest的Application节点下加入
+   ```xml
+      <meta-data 
+        android:name="android.max_aspect"
+        android:value="2.4" />
+   ```
+   ② 在manifest的Application节点中加入
+   ```xml
+      android:resizeableActivity="true"
+   ```
+   ③ 在manifest的Application节点中加入
+   ```xml
+      android:maxAspectRatio="2.4"
+   ```
+   ④ 升级targetSdkVersion为25以上版本
+   
+#### 关于刘海屏 
+  在manifest的Application节点下加入，vivo和oppo没有找到相关配置信息
+   ```xml
+      <!--适配华为（huawei）刘海屏-->
+      <meta-data 
+        android:name="android.notch_support" 
+        android:value="true"/>
+      <!--适配小米（xiaomi）刘海屏-->
+      <meta-data
+        android:name="notch.config"
+        android:value="portrait|landscape" />
+   ```
   
-## 用法
-### 初始化
-- 基础用法（已经可以满足日常沉浸式）
+## Api详解
+- 基础用法
 
     ```java
     ImmersionBar.with(this).init();
@@ -42,6 +84,10 @@
                  .navigationBarAlpha(0.4f)  //导航栏透明度，不写默认0.0F
                  .barAlpha(0.3f)  //状态栏和导航栏透明度，不写默认0.0f
                  .statusBarDarkFont(true)   //状态栏字体是深色，不写默认为亮色
+                 .navigationBarDarkIcon(true) //导航栏图标是深色，不写默认为亮色
+                 .autoDarkModeEnable(true) //自动状态栏字体和导航栏图标变色，必须指定状态栏颜色和导航栏颜色才可以自动变色哦
+                 .autoStatusBarDarkModeEnable(true,0.2f) //自动状态栏字体变色，必须指定状态栏颜色才可以自动变色哦
+                 .autoNavigationBarDarkModeEnable(true,0.2f) //自动导航栏图标变色，必须指定导航栏颜色才可以自动变色哦
                  .flymeOSStatusBarFontColor(R.color.btn3)  //修改flyme OS状态栏字体颜色
                  .fullScreen(true)      //有导航栏的情况下，activity全屏显示，也就是activity最下面被导航栏覆盖，不写默认非全屏
                  .hideBar(BarHide.FLAG_HIDE_BAR)  //隐藏状态栏或导航栏或两者，不写默认不隐藏
@@ -57,106 +103,92 @@
                  .removeSupportView(toolbar)  //移除指定view支持
                  .removeSupportAllView() //移除全部view支持
                  .navigationBarEnable(true)   //是否可以修改导航栏颜色，默认为true
-                 .navigationBarWithKitkatEnable(true)  //是否可以修改安卓4.4和emui3.1手机导航栏颜色，默认为true
-                 .fixMarginAtBottom(true)   //已过时，当xml里使用android:fitsSystemWindows="true"属性时,解决4.4和emui3.1手机底部有时会出现多余空白的问题，默认为false，非必须
-                 .addTag("tag")  //给以上设置的参数打标记
-                 .getTag("tag")  //根据tag获得沉浸式参数
-                 .reset()  //重置所以沉浸式参数
+                 .navigationBarWithKitkatEnable(true)  //是否可以修改安卓4.4和emui3.x手机导航栏颜色，默认为true
+                 .navigationBarWithEMUI3Enable(true) //是否可以修改emui3.x手机导航栏颜色，默认为true
                  .keyboardEnable(true)  //解决软键盘与底部输入框冲突问题，默认为false，还有一个重载方法，可以指定软键盘mode
                  .keyboardMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)  //单独指定软键盘模式
-                 .setOnKeyboardListener(new OnKeyboardListener() {    //软键盘监听回调
+                 .setOnKeyboardListener(new OnKeyboardListener() {    //软键盘监听回调，keyboardEnable为true才会回调此方法
                        @Override
                        public void onKeyboardChange(boolean isPopup, int keyboardHeight) {
                            LogUtils.e(isPopup);  //isPopup为true，软键盘弹出，为false，软键盘关闭
                        }
                   })
-                 .init();  //必须调用方可沉浸式
+                 .setOnNavigationBarListener(onNavigationBarListener) //导航栏显示隐藏监听，目前只支持华为和小米手机
+                 .setOnBarListener(OnBarListener) //第一次调用和横竖屏切换都会触发，可以用来做刘海屏遮挡布局控件的问题
+                 .addTag("tag")  //给以上设置的参数打标记
+                 .getTag("tag")  //根据tag获得沉浸式参数
+                 .reset()  //重置所以沉浸式参数
+                 .init();  //必须调用方可应用以上所配置的参数
     ```
-    
-### 关闭销毁
-- 在activity的onDestroy方法中执行
+## 在Activity中实现沉浸式
 
-    ```java
-    ImmersionBar.with(this).destroy(); //必须调用该方法，防止内存泄漏
-    ```
-	
-## 建议
-- 建议在BaseActivity中初始化和销毁,可以参看demo中[BaseActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/sample/src/main/java/com/gyf/immersionbar/activity/BaseActivity.java)
+- java用法
 
-    ```java
-    public class BaseActivity extends AppCompatActivity {
+   ```java
+    ImmersionBar.with(this).init();
+   ```
+- kotlin用法
+ 
+   ```kotlin
+    immersionBar {
+        statusBarColor(R.color.colorPrimary) 
+        navigationBarColor(R.color.colorPrimary)
+    }
+   ```
   
-         private ImmersionBar mImmersionBar;
-         @Override
-         protected void onCreate(@Nullable Bundle savedInstanceState) {
-             super.onCreate(savedInstanceState);
-           mImmersionBar = ImmersionBar.with(this);
-           mImmersionBar.init();   //所有子类都将继承这些相同的属性
-            
-         }
-     
-         @Override
-         protected void onDestroy() {
-             super.onDestroy();
-             if (mImmersionBar != null)
-                mImmersionBar.destroy();  //必须调用该方法，防止内存泄漏，不调用该方法，如果界面bar发生改变，在不关闭app的情况下，退出此界面再进入将记忆最后一次bar改变的状态
-         }
-     }
-    ```
 
 ## 在Fragment中实现沉浸式
 
-注意：2.2.6版本已将[ImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/barlibrary/src/main/java/com/gyf/barlibrary/ImmersionFragment.java)这个类标记为过时，请用户自行使用懒加载方式实现
-
-- 在Fragment使用ImmersionBar
-  #### 第一种，当结合viewpager使用的时候，请使用懒加载的形式，参考demo中的[BaseLazyFragment](https://github.com/gyf-dev/ImmersionBar/tree/master/sample/src/main/java/com/gyf/immersionbar/fragment/one/BaseLazyFragment.java)这个类
-  #### 第二种，当使用show()和hide()来控制Fragment显示隐藏的时候，参考demo中的[BaseTwoFragment](https://github.com/gyf-dev/ImmersionBar/tree/master/sample/src/main/java/com/gyf/immersionbar/fragment/two/BaseTwoFragment.java)这个类
-  注意：
-  - 2.2.7版本以后别忘了在Fragment的onDestroy方法里销毁沉浸式了，2.2.7版本之前不需要调用
+#### 在Fragment使用ImmersionBar
+  - 第一种，你的Fragment直接继承[SimpleImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/SimpleImmersionFragment.java)或者[ImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/ImmersionFragment.java)类，在initImmersionBar方法中实现沉浸式代码，只有当immersionBarEnabled返回为true才可以走initImmersionBar方法哦，不过immersionBarEnabled默认返回已经为true了，如果当前Fragment不想走沉浸式方法，请将immersionBarEnabled设置为false
+  - 第二种，如果你的Fragment不能继承[SimpleImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/SimpleImmersionFragment.java)或者[ImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/ImmersionFragment.java)类，请参考[SimpleImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/SimpleImmersionFragment.java)实现[SimpleImmersionOwner](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/SimpleImmersionOwner.java)接口，或者参考[ImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/ImmersionFragment.java)实现[ImmersionOwner](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/ImmersionOwner.java)接口
   
-  ```java
-     @Override
-     protected void onDestroy() {
-         super.onDestroy();
-         if (mImmersionBar != null)
-            mImmersionBar.destroy();  
-     }
-  ```
-  - 以show()和hide()方式控制Fragment显示隐藏，别忘了重写onHiddenChanged方法，如下
-  
-  ```java
-       @Override
-       public void onHiddenChanged(boolean hidden) {
-           super.onHiddenChanged(hidden);
-           if (!hidden && mImmersionBar != null)
-              mImmersionBar.init();
-       }
-    ```
-- 在Activity使用ImmersionBar
-  #### 第一种，当结合viewpager使用的时候，请使用viewpager的addOnPageChangeListener的方法监听沉浸式，参考demo中[FragmentThreeActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/sample/src/main/java/com/gyf/immersionbar/activity/FragmentThreeActivity.java)这个类
-  #### 第二种，当使用show()和hide()来控制Fragment显示隐藏的时候，请在tab切换的时候使用ImmersionBar，参考demo中[FragmentFourActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/sample/src/main/java/com/gyf/immersionbar/activity/FragmentFourActivity.java)这个类
-- 使用Fragment第三方框架[Fragmentation](https://github.com/YoKeyword/Fragmentation)实现沉浸式
-  #### 参考demo中[FragmentFiveActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/sample/src/main/java/com/gyf/immersionbar/activity/FragmentFiveActivity.java)和[BaseFiveFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/sample/src/main/java/com/gyf/immersionbar/fragment/five/BaseFiveFragment.java)这个类
+  > [SimpleImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/SimpleImmersionFragment.java)和[ImmersionFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-components/src/main/java/com/gyf/immersionbar/components/ImmersionFragment.java)区别是什么？
+    
+   | 方法名字 | SimpleImmersionFragment | ImmersionFragment |
+   | :------: | :------: | :------: |
+   | initImmersionBar()：沉浸式代码写着这里 | ✅ | ✅ |
+   | immersionBarEnabled()：当前Fragment是否可以走initImmersionBar方法 | ✅ | ✅ |
+   | onLazyBeforeView()：懒加载，在view初始化之前调用 | ❌ | ✅ |
+   | onLazyAfterView()：懒加载，在view初始化之后调用 | ❌ | ✅ |
+   | onVisible()：当前Fragment对用户可见的时候调用 | ❌ | ✅ |
+   | onInvisible()：当前Fragment不可见的时候调用 | ❌ | ✅ |
+    
+#### 在Activity使用ImmersionBar
+  - 第一种，当结合viewpager使用的时候，请使用viewpager的addOnPageChangeListener的方法监听沉浸式，参考demo中[FragmentThreeActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-simple/src/main/java/com/gyf/immersionbar/simple/activity/FragmentThreeActivity.java)这个类
+  - 第二种，当使用show()和hide()来控制Fragment显示隐藏的时候，请在tab切换的时候使用ImmersionBar，参考demo中[FragmentFourActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-simple/src/main/java/com/gyf/immersionbar/simple/activity/FragmentFourActivity.java)这个类
+#### 使用Fragment第三方框架[Fragmentation](https://github.com/YoKeyword/Fragmentation)实现沉浸式
+  - 参考demo中[FragmentFiveActivity](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-simple/src/main/java/com/gyf/immersionbar/simple/activity/FragmentFiveActivity.java)和[BaseFiveFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-simple/src/main/java/com/gyf/immersionbar/simple/fragment/five/BaseFiveFragment.java)这个类
 
 ## 在Dialog中实现沉浸式，具体实现参考demo
-- ①结合dialogFragment使用，可以参考demo中的[BaseDialogFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/sample/src/main/java/com/gyf/immersionbar/fragment/dialog/BaseDialogFragment.java)这个类
-
+- ①结合dialogFragment使用，可以参考demo中的[BaseDialogFragment](https://github.com/gyf-dev/ImmersionBar/blob/master/immersionbar-simple/src/main/java/com/gyf/immersionbar/simple/fragment/dialog/BaseDialogFragment.java)这个类
    ```java
-         ImmersionBar.with(this, dialog) .init();
-      
+       ImmersionBar.with(this).init();
    ```
-- ②其他dialog
+- ②其他dialog，关闭dialog的时候必须调用销毁方法
     ```java
-            ImmersionBar.with(this, dialog, "flag")   //第三个参数是为当前Dialog加上标记，多个Dialog之间不可相同
-                        .init();
-         
+        ImmersionBar.with(this, dialog).init();
     ```
+    销毁方法：
     
-   注意：在dialog使用，当销毁dialog同时，别忘了调用ImmersionBar的destroy方法了
+    java中
+    ```java
+        ImmersionBar.destroy(this, dialog);
+    ```
+    kotlin中
+    ```kotlin
+        destroyImmersionBar(dialog)
+    ```
    
 <img width="300"  src="https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/Screenshot_dialog.gif"/>
 
-## 状态栏与布局顶部重叠解决方案，六种方案任选其一
+## 在PopupWindow中实现沉浸式，具体实现参考demo
+   重点是调用以下方法，但是此方法会导致有导航栏的手机底部布局会被导航栏覆盖，还有底部输入框无法根据软键盘弹出而弹出，具体适配请参考demo。
+   ```java
+       popupWindow.setClippingEnabled(false);
+   ```
+
+## 状态栏与布局顶部重叠解决方案，六种方案根据不同需求任选其一
 - ① 使用dimen自定义状态栏高度，不建议使用，因为设备状态栏高度并不是固定的
 
     在values-v19/dimens.xml文件下
@@ -192,7 +224,7 @@
        </LinearLayout>
     ```
   
-- ② 使用系统的fitsSystemWindows属性，使用该属性不会导致输入框与软键盘冲突问题，不要再Fragment使用该属性
+- ② 使用系统的fitsSystemWindows属性，使用该属性不会导致输入框与软键盘冲突问题，不要再Fragment使用该属性，只适合纯色状态栏
 
    ```xml
        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -210,7 +242,7 @@
    ```
    - 注意：ImmersionBar一定要在设置完布局以后使用，
 
-- ③ 使用ImmersionBar的fitsSystemWindows(boolean fits)方法
+- ③ 使用ImmersionBar的fitsSystemWindows(boolean fits)方法，只适合纯色状态栏
 
     ```java
         ImmersionBar.with(this)
@@ -218,7 +250,7 @@
             .statusBarColor(R.color.colorPrimary)
             .init();
     ```
-- ④ 使用ImmersionBar的statusBarView(View view)方法
+- ④ 使用ImmersionBar的statusBarView(View view)方法，可以用来适配渐变色状态栏、侧滑返回
 
     在标题栏的上方增加View标签，高度指定为0dp
     ```xml
@@ -251,15 +283,15 @@
          //或者
          //ImmersionBar.setStatusBarView(this,view);
      ```   
-- ⑤ 使用ImmersionBar的titleBar(View view)方法，原理是设置paddingTop
+- ⑤ 使用ImmersionBar的titleBar(View view)方法，原理是设置paddingTop，可以用来适配渐变色状态栏、侧滑返回
     ```java
              ImmersionBar.with(this)
-                   .titleBar(view) //可以为任意view，如果是自定义xml实现标题栏的话，最外层节点不能为RelativeLayout
+                   .titleBar(view) //可以为任意view，如果是自定义xml实现标题栏的话，标题栏根节点不能为RelativeLayout或者ConstraintLayout，以及其子类
                    .init();
              //或者
              //ImmersionBar.setTitleBar(this, view);
      ```
-- ⑥ 使用ImmersionBar的titleBarMarginTop(View view)方法，原理是设置marginTop
+- ⑥ 使用ImmersionBar的titleBarMarginTop(View view)方法，原理是设置marginTop，只适合纯色状态栏
     ```java
              ImmersionBar.with(this)
                    .titleBarMarginTop(view)  //可以为任意view
@@ -291,8 +323,7 @@
                      .init();
    ```
 <img width="300"  src="https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/whiteStatusBar.png"/>
-
-
+    
 ## 状态栏和导航栏其它方法
 	
 - public static boolean hasNavigationBar(Activity activity)
@@ -318,19 +349,37 @@
 - public static int getActionBarHeight(Activity activity)
  
     获得ActionBar的高度
+
+- public static boolean hasNotchScreen(Activity activity)
+ 
+    是否是刘海屏
+    
+- public static boolean getNotchHeight(Activity activity)
+ 
+    获得刘海屏高度
     
 - public static boolean isSupportStatusBarDarkFont()
  
     判断当前设备支不支持状态栏字体设置为黑色
 
+- public static boolean isSupportNavigationIconDark()
+ 
+    判断当前设备支不支持导航栏图标设置为黑色
+
 - public static void hideStatusBar(Window window) 
  
     隐藏状态栏
     
+    
 ## 混淆规则(proguard-rules.pro)
    ```
-    -keep class com.gyf.barlibrary.* {*;} 
+    -keep class com.gyf.immersionbar.* {*;} 
+    -dontwarn com.gyf.immersionbar.**
    ```
+   
+## 问题汇总
+#### 点我[问题汇总](https://github.com/gyf-dev/ImmersionBar/wiki/questions)
+    
 
 ## 效果图 ##
 #### 说明 ####
@@ -353,5 +402,3 @@
 
 ## 联系我 ##
 - QQ群 314360549（问题交流）
-- WeChat(微信)
-<img width="300"  src="https://github.com/gyf-dev/Screenshots/blob/master/ImmersionBar/wechat.JPG"/>
